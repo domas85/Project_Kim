@@ -15,8 +15,13 @@ public class BehaviourNode
     {
         myChildren = someChildren;
 
-        foreach (BehaviourNode child in myChildren) if (child != null) child.Parent = this;
-
+        foreach (BehaviourNode c in myChildren)
+        {
+            if (c != null)
+            {
+                c.Parent = this;
+            }
+        }
     }
 
     protected List<BehaviourNode> myChildren = new List<BehaviourNode>();

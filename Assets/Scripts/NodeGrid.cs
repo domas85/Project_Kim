@@ -89,7 +89,7 @@ public class NodeGrid : MonoBehaviour
             tile.y = node.gridY;
             tilespath.Add(tile);
         }
-        tilespath.Reverse();
+        //tilespath.Reverse();
         return tilespath;
     }
 
@@ -115,18 +115,21 @@ public class NodeGrid : MonoBehaviour
                 }
                 Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
-            foreach (Grid.Tile tile in tilespath)
+            if (tilespath != null)
             {
-                Gizmos.color = Color.yellow;
-                Vector3 cubeSize = new Vector3(Spacing * VisualTileSize, 0.1f, Spacing * VisualTileSize);
+                foreach (Grid.Tile tile in tilespath)
+                {
+                    Gizmos.color = Color.yellow;
+                    Vector3 cubeSize = new Vector3(Spacing * VisualTileSize, 0.1f, Spacing * VisualTileSize);
 
 
-                Vector3 cubePos = new Vector3();
+                    Vector3 cubePos = new Vector3();
 
-                cubePos.x = (tile.x * Spacing) + Spacing / 2.0f;
-                cubePos.z = (tile.y * Spacing) + Spacing / 2.0f;
+                    cubePos.x = (tile.x * Spacing) + Spacing / 2.0f;
+                    cubePos.z = (tile.y * Spacing) + Spacing / 2.0f;
 
-                Gizmos.DrawWireCube(cubePos + OffsetPos(), cubeSize);
+                    Gizmos.DrawWireCube(cubePos + OffsetPos(), cubeSize);
+                }
             }
         }
     }

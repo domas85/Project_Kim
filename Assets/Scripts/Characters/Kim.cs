@@ -9,55 +9,59 @@ using UnityEngine.Tilemaps;
 public class Kim : CharacterController
 {
     [SerializeField] float ContextRadius;
-    [SerializeField] NodeGrid grid;
+    [SerializeField] public NodeGrid grid;
     [SerializeField] Transform burger;
     List<Grid.Tile> tilesPath;
     List<Node> zombieNeighbours;
     Zombie closest;
+
     public override void StartCharacter()
     {
         base.StartCharacter();
+        FindAllBurgers();
     }
 
     public override void UpdateCharacter()
     {
         base.UpdateCharacter();
 
-        FindShortestPathToTarget(transform.position, burger.position);
+        //FindShortestPathToTarget(transform.position, burger.position);
         closest = GetClosest(GetContextByTag("Zombie"))?.GetComponent<Zombie>();
         if (closest != null)
         {
-            GetallZombies();
+            GetZombieDeathZone();
         }
+        //if (grid.path != null)
+        //{
+        //    tilesPath = grid.ConvertNodePathToTilePath(grid.path);
+        //}
 
-        if (tilesPath != null)
-        {
-            // Debug.Log("go farward");
-            SetWalkBuffer(tilesPath);
-        }
+        //if (tilesPath != null)
+        //{
+        //    // Debug.Log("go farward");
+        //    SetWalkBuffer(tilesPath);
+        //}
     }
 
-    void ResetZombieNeighbours()
+    public Burger[] allBurgers;
+
+    public void FindAllBurgers()
     {
-        if (grid != null && zombieNeighbours != null)
-        {
-            List<Node> previousNeightbours = new List<Node>();
-            previousNeightbours = zombieNeighbours;
-            foreach (Node zombieNode in previousNeightbours)
-            {
-                zombieNode.walkable = true;
-            }
-        }
+        allBurgers = FindObjectsOfType<Burger>(false);
     }
-    public Vector3 lastTransformPos;
+
+
+
     public Node lastZombieNode;
     public Node Currentzombie;
-    void GetallZombies()
+    List<Node> previousNeightbours = new List<Node>();
+
+    void GetZombieDeathZone()
     {
         if (grid != null)
         {
             Currentzombie = grid.NodeFromWorldPoint(closest.transform.position);
-            if (lastZombieNode != null)
+            if (lastZombieNode == null)
             {
                 lastZombieNode = Currentzombie;
             }
@@ -68,32 +72,24 @@ public class Kim : CharacterController
                 zombieNeighbours.AddRange(grid.GetNeighbours(zombieNeighbours[i]));
             }
 
-            var diffVector = closest.transform.position - lastTransformPos;
-            if (lastZombieNode != Currentzombie)
+            if (lastZombieNode == Currentzombie)
             {
-
-                lastTransformPos = closest.transform.position;
-                foreach (Node zombieNode in zombieNeighbours)
-                {
-
-
-                    zombieNode.walkable = true;
-
-
-                }
-                lastZombieNode = Currentzombie;
-            }
-            else if(lastZombieNode == Currentzombie)
-            {
-                List<Node> previousNeightbours = new List<Node>();
                 previousNeightbours = zombieNeighbours;
                 foreach (Node zombieNode in zombieNeighbours)
                 {
-                    zombieNode.walkable = false;
+                    //zombieNode.walkable = false;
+                    zombieNode.zCost = 1000000000;
                 }
-
             }
-
+            if (lastZombieNode != Currentzombie)
+            {
+                lastZombieNode = Currentzombie;
+                foreach (Node zombieNode in previousNeightbours)
+                {
+                    //zombieNode.walkable = true;
+                    zombieNode.zCost = 0;
+                }
+            }
         }
     }
 
@@ -140,7 +136,7 @@ public class Kim : CharacterController
 
 
 
-    void FindShortestPathToTarget(Vector3 startPos, Vector3 targetPos)
+    public void FindShortestPathToTarget(Vector3 startPos, Vector3 targetPos)
     {
         //List<Grid.Tile> alltiles = Grid.Instance.GetTiles();
 
@@ -174,7 +170,7 @@ public class Kim : CharacterController
             if (currentNode == targetNode)
             {
                 RetracePath(startNode, targetNode);
-                Debug.Log("path found");
+
                 return;
             }
 
@@ -199,57 +195,6 @@ public class Kim : CharacterController
             }
         }
     }
-
-    void FindPathWithoutZombies(Vector3 startPos, Vector3 targetPos)
-    {
-        Node startNode = grid.NodeFromWorldPoint(startPos);
-        Node targetNode = grid.NodeFromWorldPoint(targetPos);
-
-        List<Node> openSet = new List<Node>();
-        HashSet<Node> closedSet = new HashSet<Node>();
-        openSet.Add(startNode);
-
-        while (openSet.Count > 0)
-        {
-            Node currentNode = openSet[0];
-            for (int i = 1; i < openSet.Count; i++)
-            {
-                if (openSet[i].fCost < currentNode.fCost || openSet[i].fCost == currentNode.fCost && openSet[i].hCost < currentNode.hCost)
-                {
-                    currentNode = openSet[i];
-                }
-            }
-            openSet.Remove(currentNode);
-            closedSet.Add(currentNode);
-            if (currentNode == targetNode)
-            {
-                RetracePath(startNode, targetNode);
-                Debug.Log("path found");
-                return;
-            }
-
-            foreach (Node neighbour in grid.GetNeighbours(currentNode))
-            {
-                if (!neighbour.walkable || closedSet.Contains(neighbour)) continue;
-
-                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
-
-                if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
-                {
-                    neighbour.gCost = newMovementCostToNeighbour;
-                    neighbour.hCost = GetDistance(neighbour, targetNode);
-                    neighbour.parent = currentNode;
-
-                    if (!openSet.Contains(neighbour))
-                    {
-                        openSet.Add(neighbour);
-                    }
-                }
-
-            }
-        }
-    }
-
 
     void RetracePath(Node startNode, Node endNode)
     {
@@ -260,7 +205,6 @@ public class Kim : CharacterController
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
-        tilesPath = grid.ConvertNodePathToTilePath(path);
         path.Reverse();
 
         grid.path = path;
