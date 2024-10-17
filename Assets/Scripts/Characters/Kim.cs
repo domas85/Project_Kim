@@ -9,28 +9,43 @@ using UnityEngine.Tilemaps;
 public class Kim : CharacterController
 {
     [SerializeField] float ContextRadius;
-    [SerializeField] public NodeGrid grid;
-    [SerializeField] Transform burger;
+    KimBehaviourTree kimBehaviourTree;
+
+    public List<Burger> allBurgers = new();
+
     List<Grid.Tile> tilesPath;
-    List<Node> zombieNeighbours;
+    List<Node> zombieNeighbours = new List<Node>();
     Zombie closest;
+    List<Zombie> zombies;
+
+
 
     public override void StartCharacter()
     {
         base.StartCharacter();
         FindAllBurgers();
+        zombies = FindObjectsOfType<Zombie>().ToList();
+        kimBehaviourTree = GetComponent<KimBehaviourTree>();
+        kimBehaviourTree.StartKimBehabiour();
     }
 
     public override void UpdateCharacter()
     {
         base.UpdateCharacter();
+        FindAllBurgers();
 
         //FindShortestPathToTarget(transform.position, burger.position);
-        closest = GetClosest(GetContextByTag("Zombie"))?.GetComponent<Zombie>();
+        foreach (var zombie in zombies)
+        {
+
+            closest = GetClosest(GetContextByTag("Zombie"))?.GetComponent<Zombie>();
+        }
+
         if (closest != null)
         {
             GetZombieDeathZone();
         }
+
         //if (grid.path != null)
         //{
         //    tilesPath = grid.ConvertNodePathToTilePath(grid.path);
@@ -43,11 +58,10 @@ public class Kim : CharacterController
         //}
     }
 
-    public Burger[] allBurgers;
 
     public void FindAllBurgers()
     {
-        allBurgers = FindObjectsOfType<Burger>(false);
+        allBurgers = FindObjectsOfType<Burger>(false).ToList();
     }
 
 
@@ -56,29 +70,70 @@ public class Kim : CharacterController
     public Node Currentzombie;
     List<Node> previousNeightbours = new List<Node>();
 
+
     void GetZombieDeathZone()
     {
-        if (grid != null)
+        if (NodeGrid.instance != null)
         {
-            Currentzombie = grid.NodeFromWorldPoint(closest.transform.position);
+            Currentzombie = NodeGrid.instance.NodeFromWorldPoint(closest.transform.position);
             if (lastZombieNode == null)
             {
                 lastZombieNode = Currentzombie;
             }
-            zombieNeighbours = grid.GetNeighbours(Currentzombie);
+
+            //List<Node> neighbourPoints = new List<Node>();
+            //for (int i = 0; i < 1; i++)
+            //{
+            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX + 2, Currentzombie.gridY + 2]);
+            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX - 2, Currentzombie.gridY - 2]);
+
+            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX + 2, Currentzombie.gridY - 2]);
+            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX - 2, Currentzombie.gridY + 2]);
+
+            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX - 2, Currentzombie.gridY]);
+            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX + 2, Currentzombie.gridY]);
+
+            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX, Currentzombie.gridY - 2]);
+            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX, Currentzombie.gridY + 2]);
+            //}
+
+
+     
+            var innerZombieNeighbours = zombieNeighbours;
+
+
+
 
             for (int i = 0; i < 8; i++)
             {
-                zombieNeighbours.AddRange(grid.GetNeighbours(zombieNeighbours[i]));
+                //zombieNeighbours.AddRange(NodeGrid.instance.GetNeighbours(neighbourPoints[i]));
+                zombieNeighbours.AddRange(NodeGrid.instance.GetNeighbours(zombieNeighbours[i]));
             }
+            //for (int i = 0; i < 65; i++)
+            //{
+            //    zombieNeighbours.AddRange(NodeGrid.instance.GetNeighbours(zombieNeighbours[i]));
+            //}
 
             if (lastZombieNode == Currentzombie)
             {
                 previousNeightbours = zombieNeighbours;
                 foreach (Node zombieNode in zombieNeighbours)
                 {
+                    foreach (Node innerZone in innerZombieNeighbours)
+                    {
+                        if (innerZone == zombieNode)
+                        {
+                            innerZone.zCost = 200;
+                        }
+                        else
+                        {
+
+                            zombieNode.zCost = 100;
+                        }
+
+
+                    }
                     //zombieNode.walkable = false;
-                    zombieNode.zCost = 1000000000;
                 }
             }
             if (lastZombieNode != Currentzombie)
@@ -96,7 +151,7 @@ public class Kim : CharacterController
     float nodeDiameter = 0.4f;
     private void OnDrawGizmos()
     {
-        if (grid != null && zombieNeighbours != null)
+        if (NodeGrid.instance != null && zombieNeighbours != null)
         {
             foreach (Node node in zombieNeighbours)
             {
@@ -106,34 +161,6 @@ public class Kim : CharacterController
             }
         }
     }
-
-
-    public List<Grid.Tile> GetNeighbours(Grid.Tile tile)
-    {
-        List<Grid.Tile> neighbours = new List<Grid.Tile>();
-
-        for (int x = -1; x <= 1; x++)
-        {
-            for (int y = -1; y <= 1; y++)
-            {
-                if (x == 0 && y == 0) continue;
-
-                int checkX = tile.x + x;
-                int checkY = tile.y + y;
-
-                if (checkX >= 0 && checkX < 40 && checkY >= 0 && checkY < 40)
-                {
-                    var tileToAdd = new Grid.Tile();
-                    tileToAdd.x = checkX;
-                    tileToAdd.y = checkY;
-                    neighbours.Add(tileToAdd);
-                }
-            }
-        }
-        return neighbours;
-    }
-
-
 
 
     public void FindShortestPathToTarget(Vector3 startPos, Vector3 targetPos)
@@ -147,8 +174,8 @@ public class Kim : CharacterController
         //HashSet<Grid.Tile> closedSet = new HashSet<Grid.Tile>();
 
 
-        Node startNode = grid.NodeFromWorldPoint(startPos);
-        Node targetNode = grid.NodeFromWorldPoint(targetPos);
+        Node startNode = NodeGrid.instance.NodeFromWorldPoint(startPos);
+        Node targetNode = NodeGrid.instance.NodeFromWorldPoint(targetPos);
 
         List<Node> openSet = new List<Node>();
         HashSet<Node> closedSet = new HashSet<Node>();
@@ -174,7 +201,7 @@ public class Kim : CharacterController
                 return;
             }
 
-            foreach (Node neighbour in grid.GetNeighbours(currentNode))
+            foreach (Node neighbour in NodeGrid.instance.GetNeighbours(currentNode))
             {
                 if (!neighbour.walkable || closedSet.Contains(neighbour)) continue;
 
@@ -207,7 +234,7 @@ public class Kim : CharacterController
         }
         path.Reverse();
 
-        grid.path = path;
+        NodeGrid.instance.path = path;
     }
 
 
@@ -228,7 +255,7 @@ public class Kim : CharacterController
 
 
 
-    Vector3 GetEndPoint()
+    public Vector3 GetEndPoint()
     {
         return Grid.Instance.WorldPos(Grid.Instance.GetFinishTile());
     }

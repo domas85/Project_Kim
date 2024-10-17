@@ -1,16 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NodeGrid : MonoBehaviour
 {
     public LayerMask unwalkableMask;
     public Vector2 gridWorldSize;
     public float nodeRadius;
-    Node[,] grid;
-
+    public Node[,] grid;
+    public static NodeGrid instance;
     float nodeDiameter;
     int gridSizeX, gridSizeY;
 
@@ -19,7 +21,23 @@ public class NodeGrid : MonoBehaviour
         nodeDiameter = nodeRadius * 2;
         gridSizeX = Mathf.RoundToInt(gridWorldSize.x / nodeDiameter);
         gridSizeY = Mathf.RoundToInt(gridWorldSize.y / nodeDiameter);
-        CreateGrid();
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        instance.CreateGrid();
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
+    }
+
+    private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
+    {
+        instance.CreateGrid();
     }
 
     void CreateGrid()
@@ -81,7 +99,7 @@ public class NodeGrid : MonoBehaviour
     public List<Grid.Tile> ConvertNodePathToTilePath(List<Node> path)
     {
         tilespath = new List<Grid.Tile>();
-
+        // return path.Select(x=>x.tileData).ToList();
         foreach (Node node in path)
         {
             Grid.Tile tile = new Grid.Tile();

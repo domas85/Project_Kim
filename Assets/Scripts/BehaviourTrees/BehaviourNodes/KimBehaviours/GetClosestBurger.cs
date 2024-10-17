@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class GetClosestBurger : BehaviourNode
 {
@@ -11,43 +12,44 @@ public class GetClosestBurger : BehaviourNode
 
     }
 
-    Burger[] allburgers;
+    List<Burger> allburgers = new();
+
     public override ReturnState Evaluate()
     {
         Kim kim = myBlackBoard.data["Kim"] as Kim;
-        allburgers = myBlackBoard.data["Burgers"] as Burger[];
-  
-        List<List<Node>> burgerPath = new List<List<Node>>();
+        allburgers = myBlackBoard.data["Burgers"] as List<Burger>;
+        myBlackBoard.data.Remove("BurgersCollected");
 
-        List<List<Node>> SoretedBurgerList = new List<List<Node>>();
-        if (allburgers != null && allburgers.Length >= 2)
+        List <List<Node>> burgerPath = new List<List<Node>>();
+
+        List<List<Node>> SortedBurgerList = new List<List<Node>>();
+        if (allburgers != null && allburgers.Count >= 2)
         {
-            for (int i = 0; i < allburgers.Length; i++)
+            for (int i = 0; i < allburgers.Count; i++)
             {
-                kim.FindShortestPathToTarget(kim.transform.position, allburgers[i].transform.position);
-                burgerPath.Add(kim.grid.path);
+                if (allburgers[i].isActiveAndEnabled)
+                {
+                    kim.FindShortestPathToTarget(kim.transform.position, allburgers[i].transform.position);
+                    burgerPath.Add(NodeGrid.instance.path);
+                }
             }
         }
-        if (allburgers.Length >= 2)
+        SortedBurgerList = burgerPath.OrderBy(go => go.Count).ToList();
+        if(myBlackBoard.data.ContainsKey("BurgersCollected") == false && SortedBurgerList.Count == 0)
         {
-            SoretedBurgerList = burgerPath.OrderBy(go => go.Count).ToList();
-        }
-
-
-        if (SoretedBurgerList[0].Count < SoretedBurgerList[1].Count && SoretedBurgerList.Count > 1)
-        {
-            kim.grid.path = SoretedBurgerList[0];
-            allburgers.ToList().RemoveAt(0);
-            myBlackBoard.data["Burgers"] = allburgers;
-            SoretedBurgerList.RemoveAt(0);
+            myBlackBoard.data.Add("BurgersCollected", SortedBurgerList);
             return ReturnState.Success;
         }
-        else if (SoretedBurgerList.Count == 1)
+        if(myBlackBoard.data.ContainsKey("BurgersCollected") == true)
         {
-            kim.grid.path = SoretedBurgerList[0];
-            allburgers.ToList().RemoveAt(0);
             return ReturnState.Success;
         }
+        if (allburgers.Count >= 1)
+        {
+            NodeGrid.instance.path = SortedBurgerList[0];
+            return ReturnState.Success;
+        }
+
 
         return ReturnState.Failure;
     }

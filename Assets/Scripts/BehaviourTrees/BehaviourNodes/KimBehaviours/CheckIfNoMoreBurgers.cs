@@ -1,18 +1,31 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CheckIfNoMoreBurgers : MonoBehaviour
+public class CheckIfNoMoreBurgers : BehaviourNode
 {
-    // Start is called before the first frame update
-    void Start()
+    public CheckIfNoMoreBurgers(List<BehaviourNode> someChildren) : base(someChildren)
     {
-        
     }
 
-    // Update is called once per frame
-    void Update()
+    List<List<Node>> allBurgersCollected;
+    public override ReturnState Evaluate()
     {
-        
+        if (myBlackBoard.data.ContainsKey("BurgersCollected") != false)
+        {
+            allBurgersCollected = myBlackBoard.data["BurgersCollected"] as List<List<Node>>;
+        }
+
+        if (allBurgersCollected != null && allBurgersCollected.Count == 0)
+        {
+            Debug.Log("yay burger");
+            return ReturnState.Success;
+        }
+        else
+        {
+            return ReturnState.Failure;
+        }
+
     }
 }

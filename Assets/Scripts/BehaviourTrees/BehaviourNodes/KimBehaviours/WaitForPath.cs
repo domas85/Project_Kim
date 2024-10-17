@@ -2,17 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WaitForPath : MonoBehaviour
+public class WaitForPath : BehaviourNode
 {
-    // Start is called before the first frame update
-    void Start()
+    public WaitForPath(List<BehaviourNode> someChildren) : base(someChildren)
     {
-        
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }

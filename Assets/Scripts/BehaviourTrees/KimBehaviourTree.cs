@@ -7,7 +7,7 @@ public class KimBehaviourTree : BehaviourTree
 {
     Kim kim;
 
-    private void Start()
+    public void StartKimBehabiour()
     {
         myBlackBoard = new BlackBoard();
         kim = GetComponent<Kim>();
@@ -19,9 +19,18 @@ public class KimBehaviourTree : BehaviourTree
                 new GetClosestBurger(new List<BehaviourNode>()),
                 new Sequence(new List<BehaviourNode>
                 {
-                    new MoveToBurger(new List<BehaviourNode>()),
-
-                })
+                    new Selector(new List<BehaviourNode>
+                    {
+                        new MoveToBurger(new List<BehaviourNode>()),
+                        new WaitForPath(new List<BehaviourNode>())
+                    })
+                }),
+                new CheckIfNoMoreBurgers(new List<BehaviourNode>()),
+                new Selector(new List<BehaviourNode>
+                {
+                    new MoveToFinish(new List<BehaviourNode>()),
+                    new WaitForPath(new List<BehaviourNode>())
+                }),
             });
         myBlackBoard.data.Add("KimTransform", transform);
         myBlackBoard.data.Add("Kim", kim);

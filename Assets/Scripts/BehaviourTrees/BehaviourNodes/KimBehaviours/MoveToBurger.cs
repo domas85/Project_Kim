@@ -13,16 +13,26 @@ public class MoveToBurger : BehaviourNode
     {
         Kim kim = myBlackBoard.data["Kim"] as Kim;
         List<Grid.Tile> path = new List<Grid.Tile>();
-        if (kim.grid.path != null)
+        if (NodeGrid.instance.path != null)
         {
-            path = kim.grid.ConvertNodePathToTilePath(kim.grid.path);
+            path = NodeGrid.instance.ConvertNodePathToTilePath(NodeGrid.instance.path);
+          
         }
-        if (path != null)
+        foreach(Node n in NodeGrid.instance.path)
         {
-            kim.SetWalkBuffer(path);
-            return ReturnState.Success;
-        }
+            Debug.Log(n.fCost);
+            if(n.fCost > 5000000)
+            {
 
+                return ReturnState.Failure;
+            }
+            else if(path != null)
+            {
+                kim.SetWalkBuffer(path);
+                return ReturnState.Success;
+            }
+        }
+ 
         return ReturnState.Failure;
     }
 

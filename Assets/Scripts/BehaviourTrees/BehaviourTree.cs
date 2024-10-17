@@ -11,7 +11,7 @@ public class BehaviourTree : MonoBehaviour
     {
         myRootNode.Evaluate();
     }
-   
+
 }
 
 public class BlackBoard
