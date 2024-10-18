@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -15,6 +16,11 @@ public class NodeGrid : MonoBehaviour
     public static NodeGrid instance;
     float nodeDiameter;
     int gridSizeX, gridSizeY;
+    [Range(3, 20)]
+    [SerializeField] int zombieSampleSqrSize = 4;
+    [Range(3,20)]
+    [SerializeField] float zombieRadius = 4;
+    private Vector3 worldBottomLeft;
 
     private void Start()
     {
@@ -43,7 +49,7 @@ public class NodeGrid : MonoBehaviour
     void CreateGrid()
     {
         grid = new Node[gridSizeX, gridSizeY];
-        Vector3 worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
+        worldBottomLeft = transform.position - Vector3.right * gridWorldSize.x / 2 - Vector3.forward * gridWorldSize.y / 2;
 
         for (int x = 0; x < gridSizeX; x++)
         {
@@ -77,7 +83,33 @@ public class NodeGrid : MonoBehaviour
         }
         return neighbours;
     }
+    public List<Node> GetZombieNeighbours(Node node)
+    {
+        List<Node> neighbours = new List<Node>();
 
+        for (int x = -zombieSampleSqrSize; x <= zombieSampleSqrSize; x++)
+        {
+            for (int y = -zombieSampleSqrSize; y <= zombieSampleSqrSize; y++)
+            {
+                if (x == 0 && y == 0) continue;
+
+                int checkX = node.gridX + x;
+                int checkY = node.gridY + y;
+
+                if (checkX >= 0 && checkX < gridSizeX && checkY >= 0 && checkY < gridSizeY)
+                {
+                    float distance = Vector3.Distance(new Vector3(node.gridX, 0, node.gridY), new Vector3(checkX, 0, checkY));
+                    if (distance < zombieRadius)
+                    {
+
+                        neighbours.Add(grid[checkX,checkY]);
+                        neighbours[neighbours.Count-1].zThreatLevel = 1-(distance/zombieRadius);
+                    }
+                }
+            }
+        }
+        return neighbours;
+    }
 
     public Node NodeFromWorldPoint(Vector3 worldPosition)
     {
@@ -92,6 +124,7 @@ public class NodeGrid : MonoBehaviour
     }
 
     public List<Node> path;
+    public List<Node> reversedPath;
     public List<Node> zombieNeighbours;
 
     List<Grid.Tile> tilespath;

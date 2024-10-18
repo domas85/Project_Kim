@@ -68,6 +68,7 @@ public class Kim : CharacterController
 
     public Node lastZombieNode;
     public Node Currentzombie;
+    [SerializeField] AnimationCurve zombieThreatLevel;
     List<Node> previousNeightbours = new List<Node>();
 
 
@@ -81,58 +82,20 @@ public class Kim : CharacterController
                 lastZombieNode = Currentzombie;
             }
 
-            //List<Node> neighbourPoints = new List<Node>();
-            //for (int i = 0; i < 1; i++)
-            //{
-            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX + 2, Currentzombie.gridY + 2]);
-            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX - 2, Currentzombie.gridY - 2]);
-
-            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX + 2, Currentzombie.gridY - 2]);
-            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX - 2, Currentzombie.gridY + 2]);
-
-            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX - 2, Currentzombie.gridY]);
-            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX + 2, Currentzombie.gridY]);
-
-            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX, Currentzombie.gridY - 2]);
-            //    neighbourPoints.Add(NodeGrid.instance.grid[Currentzombie.gridX, Currentzombie.gridY + 2]);
-            //}
+            List<Node> neighbourPoints = new List<Node>();
 
 
-     
+            zombieNeighbours = NodeGrid.instance.GetZombieNeighbours(Currentzombie);
             var innerZombieNeighbours = zombieNeighbours;
+     
 
-
-
-
-            for (int i = 0; i < 8; i++)
-            {
-                //zombieNeighbours.AddRange(NodeGrid.instance.GetNeighbours(neighbourPoints[i]));
-                zombieNeighbours.AddRange(NodeGrid.instance.GetNeighbours(zombieNeighbours[i]));
-            }
-            //for (int i = 0; i < 65; i++)
-            //{
-            //    zombieNeighbours.AddRange(NodeGrid.instance.GetNeighbours(zombieNeighbours[i]));
-            //}
 
             if (lastZombieNode == Currentzombie)
             {
                 previousNeightbours = zombieNeighbours;
                 foreach (Node zombieNode in zombieNeighbours)
                 {
-                    foreach (Node innerZone in innerZombieNeighbours)
-                    {
-                        if (innerZone == zombieNode)
-                        {
-                            innerZone.zCost = 200;
-                        }
-                        else
-                        {
-
-                            zombieNode.zCost = 100;
-                        }
-
-
-                    }
+                    zombieNode.zCost = (int)zombieThreatLevel.Evaluate(zombieNode.zThreatLevel);
                     //zombieNode.walkable = false;
                 }
             }
@@ -155,7 +118,7 @@ public class Kim : CharacterController
         {
             foreach (Node node in zombieNeighbours)
             {
-                Gizmos.color = (closest == null) ? Color.white : Color.black;
+                Gizmos.color = (closest == null) ? Color.white : new Color(1, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel)/1000, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel)/1000);
 
                 Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
@@ -232,6 +195,8 @@ public class Kim : CharacterController
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
+        NodeGrid.instance.reversedPath = path;
+
         path.Reverse();
 
         NodeGrid.instance.path = path;
