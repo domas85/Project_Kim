@@ -23,7 +23,7 @@ public class WaitForPath : BehaviourNode
 
         foreach (Node n in NodeGrid.instance.path) //it kinda works ?
         {
-            Debug.Log(n.fCost);
+            //Debug.Log(n.fCost);
             if (n.zThreatLevel !<= 0.2f)
             {
                 kim.SetWalkBuffer(returnPath);

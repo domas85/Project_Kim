@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Unity.VisualScripting;
@@ -87,7 +88,7 @@ public class Kim : CharacterController
 
             zombieNeighbours = NodeGrid.instance.GetZombieNeighbours(Currentzombie);
             var innerZombieNeighbours = zombieNeighbours;
-     
+
 
 
             if (lastZombieNode == Currentzombie)
@@ -118,7 +119,7 @@ public class Kim : CharacterController
         {
             foreach (Node node in zombieNeighbours)
             {
-                Gizmos.color = (closest == null) ? Color.white : new Color(1, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel)/1000, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel)/1000);
+                Gizmos.color = (closest == null) ? Color.white : new Color(1, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel) / 1000, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel) / 1000);
 
                 Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
@@ -160,7 +161,6 @@ public class Kim : CharacterController
             if (currentNode == targetNode)
             {
                 RetracePath(startNode, targetNode);
-
                 return;
             }
 

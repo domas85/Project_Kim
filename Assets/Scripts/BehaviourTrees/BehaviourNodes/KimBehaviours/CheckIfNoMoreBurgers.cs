@@ -12,14 +12,14 @@ public class CheckIfNoMoreBurgers : BehaviourNode
     List<List<Node>> allBurgersCollected;
     public override ReturnState Evaluate()
     {
-        if (myBlackBoard.data.ContainsKey("BurgersCollected") != false)
+        if (myBlackBoard.data.ContainsKey("BurgersLeft") != false)
         {
-            allBurgersCollected = myBlackBoard.data["BurgersCollected"] as List<List<Node>>;
+            allBurgersCollected = myBlackBoard.data["BurgersLeft"] as List<List<Node>>;
         }
 
         if (allBurgersCollected != null && allBurgersCollected.Count == 0)
         {
-            Debug.Log("yay burger");
+            //Debug.Log("yay burger");
             return ReturnState.Success;
         }
         else

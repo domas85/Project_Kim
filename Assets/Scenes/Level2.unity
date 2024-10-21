@@ -9386,6 +9386,8 @@ MonoBehaviour:
     m_Bits: 64
   gridWorldSize: {x: 16, y: 16}
   nodeRadius: 0.2
+  zombieSampleSqrSize: 16
+  zombieRadius: 6
 --- !u!4 &953600355
 Transform:
   m_ObjectHideFlags: 0
@@ -10708,6 +10710,61 @@ PrefabInstance:
         type: 3}
       propertyPath: ContextRadius
       value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[1].value
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[0].inSlope
+      value: -0.6361375
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[1].inSlope
+      value: -0.9079761
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[0].outSlope
+      value: -0.6361375
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[1].inWeight
+      value: 0.89975446
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[1].outSlope
+      value: -0.9079761
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[0].outWeight
+      value: 0.95011336
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[0].weightedMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3846718407826640484, guid: e74821599e1428f4fb096b33ee329de8,
+        type: 3}
+      propertyPath: zombieThreatLevel.m_Curve.Array.data[1].weightedMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8486096355810131729, guid: e74821599e1428f4fb096b33ee329de8,
         type: 3}

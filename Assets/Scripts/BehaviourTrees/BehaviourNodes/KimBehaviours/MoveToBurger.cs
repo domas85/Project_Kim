@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
 
@@ -13,6 +14,7 @@ public class MoveToBurger : BehaviourNode
 
     public override ReturnState Evaluate()
     {
+
         Kim kim = myBlackBoard.data["Kim"] as Kim;
         List<Grid.Tile> TilePath = new List<Grid.Tile>();
         List<Grid.Tile> reversedPath = new List<Grid.Tile>();
@@ -41,7 +43,7 @@ public class MoveToBurger : BehaviourNode
 
         foreach (Node n in NodeGrid.instance.path)
         {
-            Debug.Log(n.fCost);
+            //Debug.Log(n.fCost);
             if (n.zThreatLevel > 0.6f)
             {
                 

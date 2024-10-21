@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -18,7 +19,7 @@ public class GetClosestBurger : BehaviourNode
     {
         Kim kim = myBlackBoard.data["Kim"] as Kim;
         allburgers = myBlackBoard.data["Burgers"] as List<Burger>;
-        myBlackBoard.data.Remove("BurgersCollected");
+        myBlackBoard.data.Remove("BurgersLeft");
 
         List <List<Node>> burgerPath = new List<List<Node>>();
 
@@ -35,12 +36,12 @@ public class GetClosestBurger : BehaviourNode
             }
         }
         SortedBurgerList = burgerPath.OrderBy(go => go.Count).ToList();
-        if(myBlackBoard.data.ContainsKey("BurgersCollected") == false && SortedBurgerList.Count == 0)
+        if(myBlackBoard.data.ContainsKey("BurgersLeft") == false && SortedBurgerList.Count == 0)
         {
-            myBlackBoard.data.Add("BurgersCollected", SortedBurgerList);
+            myBlackBoard.data.Add("BurgersLeft", SortedBurgerList);
             return ReturnState.Success;
         }
-        if(myBlackBoard.data.ContainsKey("BurgersCollected") == true)
+        if(myBlackBoard.data.ContainsKey("BurgersLeft") == true)
         {
             return ReturnState.Success;
         }
