@@ -20,6 +20,10 @@ public class Kim : CharacterController
     List<Zombie> zombies;
 
 
+    public Node lastZombieNode;
+    public Node Currentzombie;
+    public AnimationCurve zombieThreatLevel;
+    List<Node> previousNeightbours = new List<Node>();
 
     public override void StartCharacter()
     {
@@ -47,16 +51,6 @@ public class Kim : CharacterController
             GetZombieDeathZone();
         }
 
-        //if (grid.path != null)
-        //{
-        //    tilesPath = grid.ConvertNodePathToTilePath(grid.path);
-        //}
-
-        //if (tilesPath != null)
-        //{
-        //    // Debug.Log("go farward");
-        //    SetWalkBuffer(tilesPath);
-        //}
     }
 
 
@@ -67,10 +61,6 @@ public class Kim : CharacterController
 
 
 
-    public Node lastZombieNode;
-    public Node Currentzombie;
-    [SerializeField] AnimationCurve zombieThreatLevel;
-    List<Node> previousNeightbours = new List<Node>();
 
 
     void GetZombieDeathZone()
@@ -85,10 +75,7 @@ public class Kim : CharacterController
 
             List<Node> neighbourPoints = new List<Node>();
 
-
             zombieNeighbours = NodeGrid.instance.GetZombieNeighbours(Currentzombie);
-            var innerZombieNeighbours = zombieNeighbours;
-
 
 
             if (lastZombieNode == Currentzombie)
@@ -129,37 +116,35 @@ public class Kim : CharacterController
 
     public void FindShortestPathToTarget(Vector3 startPos, Vector3 targetPos)
     {
-        //List<Grid.Tile> alltiles = Grid.Instance.GetTiles();
-
-        //Grid.Tile startNode = Grid.Instance.GetClosest(transform.position);
-        //Grid.Tile targetNode = Grid.Instance.GetFinishTile();
-
-        //List<Grid.Tile> openSet = new List<Grid.Tile>();
-        //HashSet<Grid.Tile> closedSet = new HashSet<Grid.Tile>();
-
+        //Stopwatch sw = new Stopwatch();
+        //sw.Start();
 
         Node startNode = NodeGrid.instance.NodeFromWorldPoint(startPos);
         Node targetNode = NodeGrid.instance.NodeFromWorldPoint(targetPos);
 
-        List<Node> openSet = new List<Node>();
+        Heap<Node> openSet = new Heap<Node>(NodeGrid.instance.MaxSize);
         HashSet<Node> closedSet = new HashSet<Node>();
         openSet.Add(startNode);
 
 
         while (openSet.Count > 0)
         {
-            Node currentNode = openSet[0];
-            for (int i = 1; i < openSet.Count; i++)
-            {
-                if (openSet[i].fCost < currentNode.fCost || openSet[i].fCost == currentNode.fCost && openSet[i].hCost < currentNode.hCost)
-                {
-                    currentNode = openSet[i];
-                }
-            }
-            openSet.Remove(currentNode);
+            //Node currentNode = openSet[0];
+            //for (int i = 1; i < openSet.Count; i++)
+            //{
+            //    if (openSet[i].fCost < currentNode.fCost || openSet[i].fCost == currentNode.fCost && openSet[i].hCost < currentNode.hCost)
+            //    {
+            //        currentNode = openSet[i];
+            //    }
+            //}
+            //openSet.Remove(currentNode);
+
+            Node currentNode = openSet.RemoveFirst();
             closedSet.Add(currentNode);
             if (currentNode == targetNode)
             {
+                //sw.Stop();
+                //print("Path found in: " + sw.Elapsed);
                 RetracePath(startNode, targetNode);
                 return;
             }
@@ -195,10 +180,10 @@ public class Kim : CharacterController
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
-        NodeGrid.instance.reversedPath = path;
 
         path.Reverse();
 
+        NodeGrid.instance.returnPath = path;
         NodeGrid.instance.path = path;
     }
 

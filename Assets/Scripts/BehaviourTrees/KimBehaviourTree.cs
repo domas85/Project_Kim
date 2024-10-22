@@ -6,7 +6,6 @@ using UnityEngine.UIElements;
 public class KimBehaviourTree : BehaviourTree
 {
     Kim kim;
-
     public void StartKimBehabiour()
     {
         myBlackBoard = new BlackBoard();
@@ -34,7 +33,13 @@ public class KimBehaviourTree : BehaviourTree
             });
         myBlackBoard.data.Add("KimTransform", transform);
         myBlackBoard.data.Add("Kim", kim);
+        myBlackBoard.data.Add("Safe", new List<Vector3>() { kim.transform.position });
         myBlackBoard.data.Add("Burgers", kim.allBurgers);
+        /*((List<Vector3>)myBlackBoard.data["Safe"]).Add(kim.transform.position);
+        if (myBlackBoard.data.TryGetValue("Safe",out var value))
+        {
+            ((List<Vector3>)value).Add(kim.transform.position);
+        }*/
         myRootNode.PopulateBlackBoard(myBlackBoard);
 
     }

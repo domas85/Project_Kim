@@ -18,9 +18,14 @@ public class NodeGrid : MonoBehaviour
     int gridSizeX, gridSizeY;
     [Range(3, 20)]
     [SerializeField] int zombieSampleSqrSize = 4;
-    [Range(3,20)]
+    [Range(3, 20)]
     [SerializeField] float zombieRadius = 4;
     private Vector3 worldBottomLeft;
+    public List<Node> path;
+    public List<Node> returnPath;
+    public List<Node> zombieNeighbours;
+
+    List<Grid.Tile> tilespath;
 
     private void Start()
     {
@@ -44,6 +49,11 @@ public class NodeGrid : MonoBehaviour
     private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
     {
         instance.CreateGrid();
+    }
+
+    public int MaxSize
+    {
+        get { return gridSizeX * gridSizeY; }
     }
 
     void CreateGrid()
@@ -102,8 +112,8 @@ public class NodeGrid : MonoBehaviour
                     if (distance < zombieRadius)
                     {
 
-                        neighbours.Add(grid[checkX,checkY]);
-                        neighbours[neighbours.Count-1].zThreatLevel = 1-(distance/zombieRadius);
+                        neighbours.Add(grid[checkX, checkY]);
+                        neighbours[neighbours.Count - 1].zThreatLevel = 1 - (distance / zombieRadius);
                     }
                 }
             }
@@ -123,11 +133,6 @@ public class NodeGrid : MonoBehaviour
         return grid[x, y];
     }
 
-    public List<Node> path;
-    public List<Node> reversedPath;
-    public List<Node> zombieNeighbours;
-
-    List<Grid.Tile> tilespath;
 
     public List<Grid.Tile> ConvertNodePathToTilePath(List<Node> path)
     {
