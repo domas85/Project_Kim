@@ -24,8 +24,8 @@ public class NodeGrid : MonoBehaviour
     public List<Node> path;
     public List<Node> returnPath;
     public List<Node> zombieNeighbours;
-
-    List<Grid.Tile> tilespath;
+    public Kim kim;
+    public List<Grid.Tile> tilespath;
 
     private void Start()
     {
@@ -162,6 +162,7 @@ public class NodeGrid : MonoBehaviour
             foreach (Node node in grid)
             {
                 Gizmos.color = (node.walkable) ? Color.white : Color.red;
+                Gizmos.color = (node.walkable) ? new Color(1, 1 - node.zThreatLevel, 1 - node.zThreatLevel) : Color.white;
                 if (path != null)
                 {
                     if (path.Contains(node))
@@ -169,6 +170,7 @@ public class NodeGrid : MonoBehaviour
                         Gizmos.color = Color.blue;
                     }
                 }
+
                 Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - .1f));
             }
             if (tilespath != null)

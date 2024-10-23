@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class WaitForPath : BehaviourNode
+public class Retreat : BehaviourNode
 {
-    public WaitForPath(List<BehaviourNode> someChildren) : base(someChildren)
+    public Retreat(List<BehaviourNode> someChildren) : base(someChildren)
     {
     }
     public override ReturnState Evaluate()
@@ -14,11 +14,9 @@ public class WaitForPath : BehaviourNode
 
 
         Kim kim = myBlackBoard.data["Kim"] as Kim;
-        List<Grid.Tile> path = new List<Grid.Tile>();
         List<Grid.Tile> pathToRetreat = new List<Grid.Tile>();
         if (NodeGrid.instance.path != null)
         {
-            path = NodeGrid.instance.ConvertNodePathToTilePath(NodeGrid.instance.path);
             kim.FindShortestPathToTarget(kim.transform.position, returnPoints[returnPoints.Count - 1]);
             pathToRetreat = NodeGrid.instance.ConvertNodePathToTilePath(NodeGrid.instance.returnPath);
         }
@@ -27,20 +25,29 @@ public class WaitForPath : BehaviourNode
         foreach (Node n in NodeGrid.instance.path) //it kinda works ?
         {
             //Debug.Log(n.fCost);
-            if (kim.zombieThreatLevel.Evaluate(n.zThreatLevel) / 1000f >= 0.1f)
+            if (kim.zombieThreatLevel.Evaluate(n.zThreatLevel) / 1000f > 0.001f)
             {
                 kim.SetWalkBuffer(pathToRetreat);
-                return ReturnState.Success;
+                return ReturnState.Running;
             }
+
         }
 
-        if (path != null && pathToRetreat.Count < pathToRetreat.Count / 2)
+        if (pathToRetreat.Count == 0)
         {
-
-            //kim.SetWalkBuffer(path);
+            //kim.FindShortestPathToTarget(kim.transform.position, returnPoints[returnPoints.Count - 1]);
+            //kim.SetWalkBuffer(path);  //I should probaly get new path to burger here
             return ReturnState.Failure;
         }
+        if (pathToRetreat.Count != 0)
+        {
 
-        return ReturnState.Success;
+            kim.SetWalkBuffer(pathToRetreat);
+            return ReturnState.Success;
+        }
+
+
+
+        return ReturnState.Running;
     }
 }

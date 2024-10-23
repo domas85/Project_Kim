@@ -21,14 +21,14 @@ public class KimBehaviourTree : BehaviourTree
                     new Selector(new List<BehaviourNode>
                     {
                         new MoveToBurger(new List<BehaviourNode>()),
-                        new WaitForPath(new List<BehaviourNode>())
+                        new Retreat(new List<BehaviourNode>())
                     })
                 }),
                 new CheckIfNoMoreBurgers(new List<BehaviourNode>()),
                 new Selector(new List<BehaviourNode>
                 {
                     new MoveToFinish(new List<BehaviourNode>()),
-                    new WaitForPath(new List<BehaviourNode>())
+                    new Retreat(new List<BehaviourNode>())
                 }),
             });
         myBlackBoard.data.Add("KimTransform", transform);

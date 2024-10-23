@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 
 public class Kim : CharacterController
@@ -24,6 +25,7 @@ public class Kim : CharacterController
     public Node Currentzombie;
     public AnimationCurve zombieThreatLevel;
     List<Node> previousNeightbours = new List<Node>();
+    float timer = 3;
 
     public override void StartCharacter()
     {
@@ -42,7 +44,6 @@ public class Kim : CharacterController
         //FindShortestPathToTarget(transform.position, burger.position);
         foreach (var zombie in zombies)
         {
-
             closest = GetClosest(GetContextByTag("Zombie"))?.GetComponent<Zombie>();
         }
 
@@ -51,7 +52,18 @@ public class Kim : CharacterController
             GetZombieDeathZone();
         }
 
+        timer -= Time.deltaTime;
+
+        if(timer <= Time.deltaTime)
+        {
+            ClearMapOfThreatLevel();
+            timer = 3;
+        }
+
+
     }
+
+
 
 
     public void FindAllBurgers()
@@ -93,25 +105,34 @@ public class Kim : CharacterController
                 foreach (Node zombieNode in previousNeightbours)
                 {
                     //zombieNode.walkable = true;
+                    //zombieNode.zThreatLevel = 0;
                     zombieNode.zCost = 0;
                 }
             }
         }
     }
 
-    float nodeDiameter = 0.4f;
-    private void OnDrawGizmos()
+    void ClearMapOfThreatLevel()
     {
-        if (NodeGrid.instance != null && zombieNeighbours != null)
+        foreach(Node n in NodeGrid.instance.grid)
         {
-            foreach (Node node in zombieNeighbours)
-            {
-                Gizmos.color = (closest == null) ? Color.white : new Color(1, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel) / 1000, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel) / 1000);
-
-                Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - .1f));
-            }
+            n.zThreatLevel = 0;
         }
     }
+
+    //float nodeDiameter = 0.4f;
+    //private void OnDrawGizmos()
+    //{
+    //    if (NodeGrid.instance != null && zombieNeighbours != null)
+    //    {
+    //        foreach (Node node in zombieNeighbours)
+    //        {
+    //            Gizmos.color = (closest == null) ? Color.white : new Color(1, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel) / 1000, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel) / 1000);
+
+    //            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - .1f));
+    //        }
+    //    }
+    //}
 
 
     public void FindShortestPathToTarget(Vector3 startPos, Vector3 targetPos)
@@ -239,4 +260,6 @@ public class Kim : CharacterController
         }
         return Closest;
     }
+
+
 }

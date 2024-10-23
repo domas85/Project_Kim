@@ -24,11 +24,11 @@ public class MoveToBurger : BehaviourNode
         var path = NodeGrid.instance.path;
         if (NodeGrid.instance.path != null)
         {
-            TilePath = NodeGrid.instance.ConvertNodePathToTilePath(NodeGrid.instance.path);
-            reversedPath = NodeGrid.instance.ConvertNodePathToTilePath(NodeGrid.instance.path);
+            TilePath = NodeGrid.instance.ConvertNodePathToTilePath(path);
+            // reversedPath = NodeGrid.instance.ConvertNodePathToTilePath(NodeGrid.instance.path);
 
         }
-        reversedPath.Reverse();
+        //reversedPath.Reverse();
 
 
 
@@ -47,8 +47,17 @@ public class MoveToBurger : BehaviourNode
         //{
         //    myBlackBoard.data["Return"] = returnPath;
         //}
+        List<Node> first5 = new();
+        if (path.Count >= 5)
+        {
+            first5 = NodeGrid.instance.path.GetRange(0, 5);
+        }
+        else
+        {
+            first5 = NodeGrid.instance.path;
+        }
 
-        foreach (Node n in NodeGrid.instance.path)
+        foreach (Node n in first5)
         {
             if (kim.zombieThreatLevel.Evaluate(n.zThreatLevel) / 1000f < 0.6f && myBlackBoard.data.TryGetValue("Safe", out var value))
             {
@@ -58,7 +67,7 @@ public class MoveToBurger : BehaviourNode
                 }
             }
             //Debug.Log(n.fCost);
-            if (kim.zombieThreatLevel.Evaluate(n.zThreatLevel) / 1000f >= 0.3f)
+            if (kim.zombieThreatLevel.Evaluate(n.zThreatLevel) / 1000f >= 0.1f)
             {
 
                 return ReturnState.Failure;
