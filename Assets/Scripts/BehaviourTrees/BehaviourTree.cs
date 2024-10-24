@@ -11,16 +11,9 @@ public class BehaviourTree : MonoBehaviour
     {
         myRootNode.Evaluate();
     }
-
 }
 
 public class BlackBoard
 {
     public Dictionary<string, object> data = new Dictionary<string, object>();
-
-    //public bool TryGetData(string akey, out object anObject)
-    //{
-    //    return data.TryGetValue(akey, out anObject);
-    //}
-
 }

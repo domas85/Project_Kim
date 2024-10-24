@@ -25,10 +25,7 @@ public class Node : IHeapItem<Node>
 
     public int fCost
     {
-        get
-        {
-            return gCost + hCost + zCost;
-        }
+        get { return gCost + hCost + zCost; }
     }
 
     public int HeapIndex
@@ -40,7 +37,7 @@ public class Node : IHeapItem<Node>
     public int CompareTo(Node nodeToCompare)
     {
         int compare = fCost.CompareTo(nodeToCompare.fCost);
-        if(compare == 0)
+        if (compare == 0)
         {
             compare = hCost.CompareTo(nodeToCompare.hCost);
         }

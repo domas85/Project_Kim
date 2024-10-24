@@ -11,17 +11,16 @@ public class KimBehaviourTree : BehaviourTree
         myBlackBoard = new BlackBoard();
         kim = GetComponent<Kim>();
 
-
         myRootNode =
             new Sequence(new List<BehaviourNode>
             {
                 new GetClosestBurger(new List<BehaviourNode>()),
                 new Sequence(new List<BehaviourNode>
                 {
-                    new Selector(new List<BehaviourNode>
+                    new Selector(new List<BehaviourNode>  //sometimes it kinda works ? Most of the time Kim just starts to do the shimmy
                     {
                         new MoveToBurger(new List<BehaviourNode>()),
-                        new Retreat(new List<BehaviourNode>())
+                        new Retreat(new List<BehaviourNode>()) 
                     })
                 }),
                 new CheckIfNoMoreBurgers(new List<BehaviourNode>()),
@@ -31,22 +30,16 @@ public class KimBehaviourTree : BehaviourTree
                     new Retreat(new List<BehaviourNode>())
                 }),
             });
+
         myBlackBoard.data.Add("KimTransform", transform);
         myBlackBoard.data.Add("Kim", kim);
         myBlackBoard.data.Add("Safe", new List<Vector3>() { kim.transform.position });
         myBlackBoard.data.Add("Burgers", kim.allBurgers);
-        /*((List<Vector3>)myBlackBoard.data["Safe"]).Add(kim.transform.position);
-        if (myBlackBoard.data.TryGetValue("Safe",out var value))
-        {
-            ((List<Vector3>)value).Add(kim.transform.position);
-        }*/
         myRootNode.PopulateBlackBoard(myBlackBoard);
-
     }
 
     void Update()
     {
         UpdateTree();
     }
-
 }

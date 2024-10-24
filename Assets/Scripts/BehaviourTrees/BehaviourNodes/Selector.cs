@@ -12,7 +12,6 @@ public class Selector : BehaviourNode
     {
         ReturnState aState = ReturnState.Failure;
 
-
         foreach (BehaviourNode child in myChildren)
         {
             switch (child.Evaluate())
@@ -28,7 +27,6 @@ public class Selector : BehaviourNode
                     return aState;
             }
         }
-
         return aState;
     }
 }

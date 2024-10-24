@@ -31,7 +31,6 @@ public class Sequence : BehaviourNode
             }
         }
 
-
         if (isRunning) aState = ReturnState.Running; 
         return aState;
     }

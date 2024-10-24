@@ -10,28 +10,22 @@ using UnityEngine.Tilemaps;
 
 public class Kim : CharacterController
 {
+    float timer = 3;
     [SerializeField] float ContextRadius;
     KimBehaviourTree kimBehaviourTree;
-
     public List<Burger> allBurgers = new();
-
     List<Grid.Tile> tilesPath;
-    List<Node> zombieNeighbours = new List<Node>();
     Zombie closest;
-    List<Zombie> zombies;
-
-
+    List<Node> zombieNeighbours = new List<Node>();
     public Node lastZombieNode;
     public Node Currentzombie;
     public AnimationCurve zombieThreatLevel;
     List<Node> previousNeightbours = new List<Node>();
-    float timer = 3;
 
     public override void StartCharacter()
     {
         base.StartCharacter();
         FindAllBurgers();
-        zombies = FindObjectsOfType<Zombie>().ToList();
         kimBehaviourTree = GetComponent<KimBehaviourTree>();
         kimBehaviourTree.StartKimBehabiour();
     }
@@ -40,13 +34,7 @@ public class Kim : CharacterController
     {
         base.UpdateCharacter();
         FindAllBurgers();
-
-        //FindShortestPathToTarget(transform.position, burger.position);
-        foreach (var zombie in zombies)
-        {
-            closest = GetClosest(GetContextByTag("Zombie"))?.GetComponent<Zombie>();
-        }
-
+        closest = GetClosest(GetContextByTag("Zombie"))?.GetComponent<Zombie>();
         if (closest != null)
         {
             GetZombieDeathZone();
@@ -56,39 +44,28 @@ public class Kim : CharacterController
 
         if(timer <= Time.deltaTime)
         {
-            ClearMapOfThreatLevel();
+            ClearMapThreatLevel();
             timer = 3;
         }
-
-
     }
-
-
-
 
     public void FindAllBurgers()
     {
         allBurgers = FindObjectsOfType<Burger>(false).ToList();
     }
 
-
-
-
-
     void GetZombieDeathZone()
     {
         if (NodeGrid.instance != null)
         {
             Currentzombie = NodeGrid.instance.NodeFromWorldPoint(closest.transform.position);
+
             if (lastZombieNode == null)
             {
                 lastZombieNode = Currentzombie;
             }
 
-            List<Node> neighbourPoints = new List<Node>();
-
             zombieNeighbours = NodeGrid.instance.GetZombieNeighbours(Currentzombie);
-
 
             if (lastZombieNode == Currentzombie)
             {
@@ -96,7 +73,6 @@ public class Kim : CharacterController
                 foreach (Node zombieNode in zombieNeighbours)
                 {
                     zombieNode.zCost = (int)zombieThreatLevel.Evaluate(zombieNode.zThreatLevel);
-                    //zombieNode.walkable = false;
                 }
             }
             if (lastZombieNode != Currentzombie)
@@ -104,15 +80,13 @@ public class Kim : CharacterController
                 lastZombieNode = Currentzombie;
                 foreach (Node zombieNode in previousNeightbours)
                 {
-                    //zombieNode.walkable = true;
-                    //zombieNode.zThreatLevel = 0;
                     zombieNode.zCost = 0;
                 }
             }
         }
     }
 
-    void ClearMapOfThreatLevel()
+    void ClearMapThreatLevel()
     {
         foreach(Node n in NodeGrid.instance.grid)
         {
@@ -120,25 +94,10 @@ public class Kim : CharacterController
         }
     }
 
-    //float nodeDiameter = 0.4f;
-    //private void OnDrawGizmos()
-    //{
-    //    if (NodeGrid.instance != null && zombieNeighbours != null)
-    //    {
-    //        foreach (Node node in zombieNeighbours)
-    //        {
-    //            Gizmos.color = (closest == null) ? Color.white : new Color(1, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel) / 1000, 1 - zombieThreatLevel.Evaluate(node.zThreatLevel) / 1000);
-
-    //            Gizmos.DrawCube(node.worldPosition, Vector3.one * (nodeDiameter - .1f));
-    //        }
-    //    }
-    //}
-
-
     public void FindShortestPathToTarget(Vector3 startPos, Vector3 targetPos)
     {
-        //Stopwatch sw = new Stopwatch();
-        //sw.Start();
+        //Stopwatch sWatch = new Stopwatch();
+        //sWatch.Start();
 
         Node startNode = NodeGrid.instance.NodeFromWorldPoint(startPos);
         Node targetNode = NodeGrid.instance.NodeFromWorldPoint(targetPos);
@@ -150,6 +109,7 @@ public class Kim : CharacterController
 
         while (openSet.Count > 0)
         {
+            //a star with the use of heap
             //Node currentNode = openSet[0];
             //for (int i = 1; i < openSet.Count; i++)
             //{
@@ -162,9 +122,10 @@ public class Kim : CharacterController
 
             Node currentNode = openSet.RemoveFirst();
             closedSet.Add(currentNode);
+
             if (currentNode == targetNode)
             {
-                //sw.Stop();
+                //sWatch.Stop();
                 //print("Path found in: " + sw.Elapsed);
                 RetracePath(startNode, targetNode);
                 return;
@@ -173,7 +134,6 @@ public class Kim : CharacterController
             foreach (Node neighbour in NodeGrid.instance.GetNeighbours(currentNode))
             {
                 if (!neighbour.walkable || closedSet.Contains(neighbour)) continue;
-
                 int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbour);
 
                 if (newMovementCostToNeighbour < neighbour.gCost || !openSet.Contains(neighbour))
@@ -187,7 +147,6 @@ public class Kim : CharacterController
                         openSet.Add(neighbour);
                     }
                 }
-
             }
         }
     }
@@ -201,13 +160,10 @@ public class Kim : CharacterController
             path.Add(currentNode);
             currentNode = currentNode.parent;
         }
-
         path.Reverse();
 
-        NodeGrid.instance.returnPath = path;
         NodeGrid.instance.path = path;
     }
-
 
     int GetDistance(Node nodeA, Node nodeB)
     {
@@ -223,8 +179,6 @@ public class Kim : CharacterController
             return 14 * dstX + 10 * (dstY - dstX);
         }
     }
-
-
 
     public Vector3 GetEndPoint()
     {
@@ -260,6 +214,4 @@ public class Kim : CharacterController
         }
         return Closest;
     }
-
-
 }

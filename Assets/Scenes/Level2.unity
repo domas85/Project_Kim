@@ -9363,7 +9363,7 @@ GameObject:
   - component: {fileID: 953600355}
   - component: {fileID: 953600354}
   m_Layer: 0
-  m_Name: A*
+  m_Name: A* Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -9388,6 +9388,8 @@ MonoBehaviour:
   nodeRadius: 0.2
   zombieSampleSqrSize: 16
   zombieRadius: 6
+  kim: {fileID: 0}
+  tilespath: []
 --- !u!4 &953600355
 Transform:
   m_ObjectHideFlags: 0

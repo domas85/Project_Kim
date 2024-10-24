@@ -8,78 +8,53 @@ public class MoveToBurger : BehaviourNode
 {
     public MoveToBurger(List<BehaviourNode> someChildren) : base(someChildren)
     {
-    }
 
-    List<Grid.Tile> returnPath = new List<Grid.Tile>();
+    }
 
     public override ReturnState Evaluate()
     {
-
-
-
         Kim kim = myBlackBoard.data["Kim"] as Kim;
-        List<Vector3> safePoints = myBlackBoard.data["Safe"] as List<Vector3>;
-        List<Grid.Tile> TilePath = new List<Grid.Tile>();
-        List<Grid.Tile> reversedPath = new List<Grid.Tile>();
-        var path = NodeGrid.instance.path;
+        List<Grid.Tile> tilePath = new List<Grid.Tile>();
+        List<Node> path = NodeGrid.instance.path;
+        List<Node> firstFiveNodes;
+
         if (NodeGrid.instance.path != null)
         {
-            TilePath = NodeGrid.instance.ConvertNodePathToTilePath(path);
-            // reversedPath = NodeGrid.instance.ConvertNodePathToTilePath(NodeGrid.instance.path);
-
+            tilePath = NodeGrid.instance.ConvertNodePathToTilePath(path);
         }
-        //reversedPath.Reverse();
 
-
-
-
-        //for (int i = 0; i < TilePath.Count / 2; i++)
-        //{
-        //    returnPath.Add(TilePath[i]);
-        //}
-
-        //if (myBlackBoard.data.ContainsKey("Return") == false)
-        //{
-        //    myBlackBoard.data.Add("Return", returnPath);
-        //}
-        //var returnPathData = myBlackBoard.data["Return"] as List<Grid.Tile>;
-        //if(returnPath != null && returnPath != returnPathData)
-        //{
-        //    myBlackBoard.data["Return"] = returnPath;
-        //}
-        List<Node> first5 = new();
         if (path.Count >= 5)
         {
-            first5 = NodeGrid.instance.path.GetRange(0, 5);
+            firstFiveNodes = NodeGrid.instance.path.GetRange(0, 5);
         }
         else
         {
-            first5 = NodeGrid.instance.path;
+            firstFiveNodes = NodeGrid.instance.path;
         }
 
-        foreach (Node n in first5)
+        foreach (Node n in firstFiveNodes)
         {
             if (kim.zombieThreatLevel.Evaluate(n.zThreatLevel) / 1000f < 0.6f && myBlackBoard.data.TryGetValue("Safe", out var value))
             {
-                if (Vector3.Distance(((List<Vector3>)value)[((List<Vector3>)value).Count - 1], kim.transform.position) >= 5)
+                var safePointData = (List<Vector3>)value;
+
+                if (Vector3.Distance(safePointData[safePointData.Count - 1], kim.transform.position) >= 5)
                 {
-                    ((List<Vector3>)value).Add(kim.transform.position);
+                    safePointData.Add(kim.transform.position);
                 }
             }
-            //Debug.Log(n.fCost);
+
             if (kim.zombieThreatLevel.Evaluate(n.zThreatLevel) / 1000f >= 0.1f)
             {
-
                 return ReturnState.Failure;
             }
         }
-        if (TilePath != null)
+
+        if (tilePath != null)
         {
-            kim.SetWalkBuffer(TilePath);
+            kim.SetWalkBuffer(tilePath);
             return ReturnState.Success;
         }
-
         return ReturnState.Failure;
     }
-
 }

@@ -16496,7 +16496,7 @@ GameObject:
   - component: {fileID: 1853884391}
   - component: {fileID: 1853884390}
   m_Layer: 0
-  m_Name: A*
+  m_Name: A* Grid
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16521,6 +16521,7 @@ MonoBehaviour:
   nodeRadius: 0.2
   zombieSampleSqrSize: 16
   zombieRadius: 6
+  tilespath: []
 --- !u!4 &1853884391
 Transform:
   m_ObjectHideFlags: 0

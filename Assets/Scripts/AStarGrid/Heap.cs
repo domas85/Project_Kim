@@ -79,7 +79,6 @@ public class Heap<T> where T : IHeapItem<T>
             {
                 return;
             }
-
         }
     }
 
@@ -110,7 +109,6 @@ public class Heap<T> where T : IHeapItem<T>
         itemA.HeapIndex = itemB.HeapIndex;
         itemB.HeapIndex = itemAIdenx;
     }
-
 }
 
 public interface IHeapItem<T> : IComparable<T>

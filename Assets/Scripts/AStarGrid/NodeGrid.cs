@@ -10,22 +10,22 @@ using UnityEngine.SceneManagement;
 public class NodeGrid : MonoBehaviour
 {
     public LayerMask unwalkableMask;
-    public Vector2 gridWorldSize;
-    public float nodeRadius;
+    public Vector2 gridWorldSize = new(16, 16);
+    public float nodeRadius = 0.2f;
     public Node[,] grid;
     public static NodeGrid instance;
     float nodeDiameter;
     int gridSizeX, gridSizeY;
     [Range(3, 20)]
-    [SerializeField] int zombieSampleSqrSize = 4;
+    [SerializeField] int zombieSampleSqrSize = 16;
     [Range(3, 20)]
-    [SerializeField] float zombieRadius = 4;
+    [SerializeField] float zombieRadius = 6;
     private Vector3 worldBottomLeft;
     public List<Node> path;
-    public List<Node> returnPath;
     public List<Node> zombieNeighbours;
-    public Kim kim;
     public List<Grid.Tile> tilespath;
+    readonly float Spacing = 0.4f;
+    readonly float VisualTileSize = 0.79f;
 
     private void Start()
     {
@@ -43,7 +43,6 @@ public class NodeGrid : MonoBehaviour
         }
         instance.CreateGrid();
         SceneManager.sceneLoaded += OnSceneLoaded;
-
     }
 
     private void OnSceneLoaded(Scene arg0, LoadSceneMode arg1)
@@ -145,13 +144,11 @@ public class NodeGrid : MonoBehaviour
             tile.y = node.gridY;
             tilespath.Add(tile);
         }
-        //tilespath.Reverse();
         return tilespath;
     }
 
 
-    float Spacing = 0.4f;
-    float VisualTileSize = 0.79f;
+
 
     void OnDrawGizmos()
     {
@@ -179,8 +176,6 @@ public class NodeGrid : MonoBehaviour
                 {
                     Gizmos.color = Color.yellow;
                     Vector3 cubeSize = new Vector3(Spacing * VisualTileSize, 0.1f, Spacing * VisualTileSize);
-
-
                     Vector3 cubePos = new Vector3();
 
                     cubePos.x = (tile.x * Spacing) + Spacing / 2.0f;

@@ -7,18 +7,20 @@ public class CheckIfNoMoreBurgers : BehaviourNode
 {
     public CheckIfNoMoreBurgers(List<BehaviourNode> someChildren) : base(someChildren)
     {
+
     }
 
     List<List<Node>> allBurgersCollected;
+
     public override ReturnState Evaluate()
     {
-
         Kim kim = myBlackBoard.data["Kim"] as Kim;
 
         if (myBlackBoard.data.ContainsKey("BurgersLeft") != false)
         {
             allBurgersCollected = myBlackBoard.data["BurgersLeft"] as List<List<Node>>;
         }
+
         if (allBurgersCollected != null && allBurgersCollected.Count == 1 && myBlackBoard.data.TryGetValue("Safe", out var value))
         {
             ((List<Vector3>)value).Clear();
@@ -28,13 +30,11 @@ public class CheckIfNoMoreBurgers : BehaviourNode
 
         if (allBurgersCollected != null && allBurgersCollected.Count == 0)
         {
-            //Debug.Log("yay burger");
             return ReturnState.Success;
         }
         else
         {
             return ReturnState.Failure;
         }
-
     }
 }

@@ -10,6 +10,9 @@ public class BehaviourNode
         Running,
         Failure
     }
+    protected List<BehaviourNode> myChildren = new List<BehaviourNode>();
+    protected BlackBoard myBlackBoard = null;
+    protected BehaviourNode Parent;
 
     public BehaviourNode(List<BehaviourNode> someChildren)
     {
@@ -24,10 +27,6 @@ public class BehaviourNode
         }
     }
 
-    protected List<BehaviourNode> myChildren = new List<BehaviourNode>();
-    protected BlackBoard myBlackBoard = null;
-    protected BehaviourNode Parent;
-
     public void PopulateBlackBoard(BlackBoard aBlackBoard)
     {
         myBlackBoard = aBlackBoard;
@@ -37,7 +36,5 @@ public class BehaviourNode
         }
     }
 
-
     public virtual ReturnState Evaluate() => ReturnState.Failure;
-
 }
