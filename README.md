@@ -7,4 +7,4 @@ Kim had to use a State machine or a Behaviour tree. There are 3 levels.
 The first 2 are not that difficult for Kim to maneuver since there are only 2 - 3 zombies, but the last level is the most difficult it has 5 zombies with minimal space between them and the buildings. 
 And this is my code for the completed assignment. 
 
-- From my limited testing I got ~70% survival rate.
+- From my limited testing I got ≈70% survival rate.
